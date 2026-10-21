@@ -2,267 +2,464 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Monitoring Arus Bocor - GI Situbondo</title>
-<style>
-:root {
-  --navy:#10243a;
-  --blue:#1769aa;
-  --orange:#f28c28;
-  --bg:#f2f5f9;
-  --muted:#718094;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  font-family:Arial,sans-serif;
-  color:#192b3d;
-  background:var(--bg);
-}
-header {
-  background:var(--navy);
-  color:white;
-  padding:22px 5%;
-  border-bottom:5px solid var(--orange);
-}
-header h1 { margin:0 0 7px; font-size:24px; }
-header p { margin:0; color:#c7d5e4; font-size:13px; }
-.container { max-width:1200px; margin:auto; padding:24px 16px; }
-.top {
-  display:flex; justify-content:space-between;
-  align-items:center; flex-wrap:wrap; gap:12px;
-  margin-bottom:20px;
-}
-h2 { font-size:19px; margin:0; }
-.pill {
-  padding:9px 13px; border-radius:20px;
-  background:#fff0dc; color:#8d510b;
-  font-size:12px; font-weight:bold;
-}
-.summary {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:14px; margin-bottom:24px;
-}
-.panel {
-  background:white; padding:19px;
-  border-radius:13px; border:1px solid #e1e7ef;
-  box-shadow:0 3px 12px #142d4410;
-  min-width:0;
-}
-.label { font-size:12px; color:var(--muted); }
-.big { font-size:25px; font-weight:bold; margin-top:9px; }
-.small { font-size:12px; color:var(--muted); margin-top:7px; }
-.phase { margin-bottom:24px; }
-.phase-title {
-  display:flex; align-items:center; gap:9px;
-  margin-bottom:13px;
-}
-.phase-dot { width:11px; height:11px; border-radius:50%; }
-.phase-r .phase-dot { background:#c74343; }
-.phase-s .phase-dot { background:#d6a000; }
-.phase-t .phase-dot { background:#16865b; }
-.grid {
-  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:14px;
-}
-.channel { border-top:4px solid var(--blue); }
-.channel-name { font-weight:bold; font-size:15px; }
-.value { font-size:29px; font-weight:bold; margin:19px 0 6px; }
-.unit { font-size:13px; color:var(--muted); font-weight:normal; }
-.channel-status { font-size:12px; color:#a46a13; margin-top:14px; }
-.chart { margin-top:24px; }
-canvas { width:100%; height:260px; display:block; }
-.notice {
-  margin-top:16px; padding:12px;
-  background:#fff8e9; border-radius:8px;
-  color:#80581a; font-size:12px; line-height:1.6;
-}
-footer {
-  text-align:center; color:var(--muted);
-  padding:25px; font-size:12px; line-height:1.7;
-}
-@media(max-width:700px) {
-  .summary { grid-template-columns:1fr; }
-  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-  .container { padding:18px 12px; }
-  .panel { padding:14px; }
-  .value { font-size:25px; }
-  header h1 { font-size:21px; }
-}
-@media(max-width:380px) {
-  .grid { grid-template-columns:1fr; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071b33">
+  <title>Monitoring Arus Bocor | GI Situbondo</title>
+
+  <style>
+    :root {
+      --navy: #071b33;
+      --panel: #102b49;
+      --blue: #1677d2;
+      --orange: #ff8a24;
+      --text: #eef5ff;
+      --muted: #9fb3ca;
+      --green: #36d399;
+      --red: #ff6b6b;
+      --line: #28425f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--navy);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      padding: 25px 5%;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(110deg, #0b2747, #071b33);
+    }
+
+    .brand {
+      color: var(--orange);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      margin: 9px 0;
+      font-size: clamp(23px, 4vw, 36px);
+    }
+
+    .subtitle { color: var(--muted); font-size: 14px; }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 24px 5%;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 20px;
+      background: #193b54;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .pill.online { color: var(--green); }
+    .pill.error { color: var(--red); }
+
+    h2 {
+      font-size: 17px;
+      margin: 26px 0 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .channel { font-size: 14px; font-weight: bold; }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .value {
+      margin: 22px 0 8px;
+      font-size: clamp(25px, 4vw, 36px);
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .unit { color: var(--muted); font-size: 13px; }
+    .status { color: var(--muted); font-size: 12px; }
+
+    .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 24px;
+    }
+
+    .section h2 { margin-top: 0; }
+
+    .chart-wrap {
+      height: 260px;
+      position: relative;
+      width: 100%;
+    }
+
+    canvas { width: 100%; height: 100%; display: block; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .meta-box {
+      background: #0b223c;
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .meta-label { color: var(--muted); font-size: 12px; }
+    .meta-value { margin-top: 7px; font-size: 14px; overflow-wrap: anywhere; }
+
+    .note {
+      margin-top: 18px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 25px 5%;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    @media (max-width: 650px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card { padding: 13px; }
+      .meta { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 380px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
+
 <body>
 <header>
+  <div class="brand">GI SITUBONDO · ENGINEERING MONITORING</div>
   <h1>MONITORING ARUS BOCOR</h1>
-  <p>GI SITUBONDO · PEMANTAUAN KABEL POWER TRAFO</p>
+  <div class="subtitle">Sistem pemantauan arus bocor kabel · 20 kV</div>
 </header>
 
-<main class="container">
-  <div class="top">
-    <h2>Dashboard Pengukuran 9 Kabel</h2>
-    <span class="pill">MODE DEMO · DATA SIMULASI</span>
-  </div>
-
-  <section class="summary">
-    <div class="panel">
-      <div class="label">Jumlah Kabel</div>
-      <div class="big">9</div>
-      <div class="small">3 fasa · 3 core per fasa</div>
-    </div>
-    <div class="panel">
-      <div class="label">Rata-rata Arus</div>
-      <div class="big" id="average">— mA</div>
-      <div class="small">Rata-rata 9 kanal simulasi</div>
-    </div>
-    <div class="panel">
-      <div class="label">Koneksi Perangkat</div>
-      <div class="big" style="font-size:20px;color:#b7791f">
-        Belum terhubung
+<main>
+  <div class="topline">
+    <div>
+      <strong>Dashboard Realtime</strong>
+      <div class="subtitle" style="margin-top:6px">
+        Pembaruan otomatis setiap 60 detik
       </div>
-      <div class="small">Menunggu integrasi ESP32 dan server</div>
     </div>
-  </section>
-
-  <section class="phase phase-r">
-    <div class="phase-title">
-      <span class="phase-dot"></span>
-      <h2>Fasa R</h2>
-    </div>
-    <div class="grid" id="phaseR"></div>
-  </section>
-
-  <section class="phase phase-s">
-    <div class="phase-title">
-      <span class="phase-dot"></span>
-      <h2>Fasa S</h2>
-    </div>
-    <div class="grid" id="phaseS"></div>
-  </section>
-
-  <section class="phase phase-t">
-    <div class="phase-title">
-      <span class="phase-dot"></span>
-      <h2>Fasa T</h2>
-    </div>
-    <div class="grid" id="phaseT"></div>
-  </section>
-
-  <section class="panel chart">
-    <h2>Perbandingan Arus 9 Kabel</h2>
-    <p class="small">Grafik nilai simulasi, bukan pengukuran aktual.</p>
-    <canvas id="chart"></canvas>
-  </section>
-
-  <div class="notice">
-    <strong>Catatan:</strong> Dashboard masih menggunakan data simulasi.
-    Nilai arus dan status belum berasal dari sensor ESP32.
-    Jangan gunakan data demo untuk keputusan operasional.
+    <span id="connection" class="pill">MENGHUBUNGKAN...</span>
   </div>
+
+  <h2>Pengukuran per Kanal</h2>
+  <div id="channels" class="grid"></div>
+
+  <section class="section">
+    <h2>Grafik Tren Arus Bocor</h2>
+    <div class="subtitle" style="margin-bottom:14px">
+      Rekaman nilai yang diterima dashboard selama halaman terbuka.
+    </div>
+    <div class="chart-wrap">
+      <canvas id="chart"></canvas>
+    </div>
+    <div class="note">
+      Grafik ini menyimpan snapshot lokal pada halaman, bukan seluruh
+      riwayat Google Sheets. Maksimal 60 titik per kanal.
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Status Sistem</h2>
+    <div class="meta">
+      <div class="meta-box">
+        <div class="meta-label">Waktu data dari perangkat</div>
+        <div class="meta-value" id="timestamp">Menunggu data...</div>
+      </div>
+      <div class="meta-box">
+        <div class="meta-label">Pembaruan terakhir di dashboard</div>
+        <div class="meta-value" id="updated">Belum ada</div>
+      </div>
+    </div>
+    <div class="note" id="message">
+      Menghubungkan ke sumber data...
+    </div>
+  </section>
 </main>
 
 <footer>
-  Monitoring Arus Bocor · GI Situbondo<br>
-  Dashboard demo — 9 kabel · R, S, T × Core 1–3
+  MONITORING ARUS BOCOR · GI SITUBONDO<br>
+  Data pengukuran untuk pemantauan teknis.
 </footer>
 
 <script>
-const cables = [
-  {phase:"R", core:1, value:18.2},
-  {phase:"R", core:2, value:21.5},
-  {phase:"R", core:3, value:16.8},
-  {phase:"S", core:1, value:24.1},
-  {phase:"S", core:2, value:19.7},
-  {phase:"S", core:3, value:22.4},
-  {phase:"T", core:1, value:17.9},
-  {phase:"T", core:2, value:20.3},
-  {phase:"T", core:3, value:23.1}
-];
+  // URL Web App Apps Script milikmu.
+  const SCRIPT_URL =
+    'https://script.google.com/macros/s/AKfycbzl4t-T2SYd2Z7aQlLBN_yRN1fa--F-1t3yvKQaxeP1ikoMRFgBnfLYZhrFHG8dBFrTvg/exec';
 
-const phaseTargets = {
-  R: document.getElementById("phaseR"),
-  S: document.getElementById("phaseS"),
-  T: document.getElementById("phaseT")
-};
+  const names = [
+    'R-Core 1', 'R-Core 2', 'R-Core 3',
+    'S-Core 1', 'S-Core 2', 'S-Core 3',
+    'T-Core 1', 'T-Core 2', 'T-Core 3'
+  ];
 
-cables.forEach(cable => {
-  const card = document.createElement("div");
-  card.className = "panel channel";
-  card.innerHTML = `
-    <div class="channel-name">Fasa ${cable.phase} · Core ${cable.core}</div>
-    <div class="value">
-      ${cable.value.toFixed(1)} <span class="unit">mA</span>
-    </div>
-    <div class="label">Nilai simulasi</div>
-    <div class="channel-status">● Menunggu integrasi sensor</div>
-  `;
-  phaseTargets[cable.phase].appendChild(card);
-});
+  // Baru ada ADS1115 alamat 0x48 untuk tiga kanal R.
+  const installed = [true, true, true, false, false, false, false, false, false];
 
-const average = cables.reduce((sum, cable) => sum + cable.value, 0)
-  / cables.length;
-document.getElementById("average").textContent =
-  average.toFixed(1) + " mA";
+  const colors = [
+    '#36d399', '#ff8a24', '#49a5ff',
+    '#36d399', '#ff8a24', '#49a5ff',
+    '#36d399', '#ff8a24', '#49a5ff'
+  ];
 
-function drawChart() {
-  const canvas = document.getElementById("chart");
-  const rect = canvas.getBoundingClientRect();
-  if (!rect.width) return;
+  const history = Array.from({ length: 9 }, () => []);
+  const times = [];
+  let lastTimestamp = '';
 
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = rect.width * dpr;
-  canvas.height = 260 * dpr;
+  const channelsEl = document.getElementById('channels');
 
-  const ctx = canvas.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  channelsEl.innerHTML = names.map((name, i) => `
+    <article class="card">
+      <div class="card-top">
+        <span class="channel">${name}</span>
+        <span class="status" id="state${i}">
+          <span class="dot"></span>Menunggu
+        </span>
+      </div>
+      <div class="value" id="value${i}">--</div>
+      <div class="unit">mA</div>
+    </article>
+  `).join('');
 
-  const w = rect.width, h = 260;
-  const left = 36, right = 10, top = 18, bottom = 42;
-  const max = 30;
-  const plotH = h - top - bottom;
-
-  ctx.clearRect(0, 0, w, h);
-  ctx.font = "11px Arial";
-  ctx.textAlign = "right";
-
-  for (let v = 0; v <= max; v += 10) {
-    const y = h - bottom - (v / max) * plotH;
-    ctx.strokeStyle = "#e5ebf2";
-    ctx.beginPath();
-    ctx.moveTo(left, y);
-    ctx.lineTo(w - right, y);
-    ctx.stroke();
-    ctx.fillStyle = "#718094";
-    ctx.fillText(v, left - 8, y + 4);
+  function setConnection(text, cls) {
+    const el = document.getElementById('connection');
+    el.textContent = text;
+    el.className = 'pill ' + (cls || '');
   }
 
-  const slot = (w - left - right) / cables.length;
-  const bw = Math.min(30, slot * 0.58);
+  function requestData() {
+    const callbackName =
+      '__arusBocorCallback_' + Date.now() + '_' +
+      Math.random().toString(36).slice(2);
 
-  cables.forEach((cable, i) => {
-    const bh = (cable.value / max) * plotH;
-    const x = left + i * slot + (slot - bw) / 2;
-    const y = h - bottom - bh;
+    const script = document.createElement('script');
+    let finished = false;
 
-    ctx.fillStyle = cable.phase === "R" ? "#c74343"
-      : cable.phase === "S" ? "#d6a000" : "#16865b";
-    ctx.fillRect(x, y, bw, bh);
+    const timeout = setTimeout(() => {
+      finish();
+      setConnection('GAGAL TERHUBUNG', 'error');
+      document.getElementById('message').textContent =
+        'Data belum berhasil dibaca. Periksa deployment Apps Script, ' +
+        'akses Anyone, dan fungsi doGet.';
+    }, 15000);
 
-    ctx.fillStyle = "#526477";
-    ctx.textAlign = "center";
-    ctx.fillText(
-      cable.phase + cable.core,
-      x + bw / 2,
-      h - 20
-    );
-  });
-}
+    function finish() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      script.remove();
+      try { delete window[callbackName]; } catch (_) {}
+    }
 
-drawChart();
-window.addEventListener("resize", drawChart);
+    window[callbackName] = data => {
+      finish();
+
+      if (!data || data.ok !== true || !Array.isArray(data.channels)) {
+        setConnection('RESPONS TIDAK VALID', 'error');
+        document.getElementById('message').textContent =
+          'Respons sumber data tidak sesuai format yang diharapkan.';
+        return;
+      }
+
+      renderData(data);
+    };
+
+    script.onerror = () => {
+      finish();
+      setConnection('GAGAL TERHUBUNG', 'error');
+      document.getElementById('message').textContent =
+        'Tidak dapat memuat data dari Apps Script.';
+    };
+
+    script.src = SCRIPT_URL + '?callback=' +
+      encodeURIComponent(callbackName) + '&_=' + Date.now();
+
+    document.head.appendChild(script);
+  }
+
+  function renderData(data) {
+    const vals = data.channels;
+
+    vals.forEach((v, i) => {
+      const valueEl = document.getElementById('value' + i);
+      const stateEl = document.getElementById('state' + i);
+
+      if (!installed[i] || v === null || v === '' ||
+          !Number.isFinite(Number(v))) {
+        valueEl.textContent = 'N/A';
+        stateEl.innerHTML = '<span class="dot"></span>Belum tersedia';
+        return;
+      }
+
+      const num = Number(v);
+      valueEl.textContent = num.toLocaleString('id-ID', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      stateEl.innerHTML =
+        '<span class="dot" style="background:var(--green)"></span>Terbaca';
+
+      // Hindari duplikasi titik bila data yang sama terambil ulang.
+      if (history[i].length === 0 ||
+          times[times.length - 1] !== data.timestamp) {
+        history[i].push(num);
+        if (history[i].length > 60) history[i].shift();
+      }
+    });
+
+    if (times.length === 0 ||
+        times[times.length - 1] !== data.timestamp) {
+      times.push(data.timestamp || new Date().toISOString());
+      if (times.length > 60) times.shift();
+    }
+
+    lastTimestamp = data.timestamp || 'Tidak tersedia';
+    document.getElementById('timestamp').textContent = lastTimestamp;
+    document.getElementById('updated').textContent =
+      new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+    document.getElementById('message').textContent =
+      'Status sumber data: ' + (data.status || 'Tidak diketahui') +
+      '. Grafik mencatat data yang diterima saat halaman terbuka.';
+
+    setConnection('TERHUBUNG', 'online');
+    drawChart();
+  }
+
+  function drawChart() {
+    const canvas = document.getElementById('chart');
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const w = rect.width;
+    const h = rect.height;
+    const left = 42, right = 10, top = 15, bottom = 30;
+    const plotW = w - left - right;
+    const plotH = h - top - bottom;
+
+    ctx.clearRect(0, 0, w, h);
+
+    const all = history.flat();
+    if (!all.length) {
+      ctx.fillStyle = '#9fb3ca';
+      ctx.font = '13px Arial';
+      ctx.fillText('Menunggu data pengukuran...', left, h / 2);
+      return;
+    }
+
+    const max = Math.max(10, ...all) * 1.15;
+
+    ctx.font = '11px Arial';
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#28425f';
+    ctx.fillStyle = '#9fb3ca';
+
+    for (let i = 0; i <= 4; i++) {
+      const y = top + plotH * i / 4;
+      const label = (max * (1 - i / 4)).toLocaleString('id-ID', {
+        maximumFractionDigits: 1
+      });
+
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(w - right, y);
+      ctx.stroke();
+      ctx.fillText(label, 2, y + 4);
+    }
+
+    history.forEach((arr, idx) => {
+      if (!installed[idx] || arr.length < 1) return;
+
+      ctx.strokeStyle = colors[idx];
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      arr.forEach((value, j) => {
+        const x = arr.length === 1
+          ? left + plotW
+          : left + plotW * j / (arr.length - 1);
+        const y = top + plotH * (1 - value / max);
+
+        if (j === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      ctx.stroke();
+    });
+
+    ctx.fillStyle = '#9fb3ca';
+    ctx.fillText('Data terbaru →', Math.max(left, w - 100), h - 7);
+  }
+
+  window.addEventListener('resize', drawChart);
+
+  requestData();
+  setInterval(requestData, 60000);
 </script>
 </body>
 </html>

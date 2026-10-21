@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monitoring Arus Bocor | GI Situbondo</title>
+<style>
+:root {
+  --navy: #10243a;
+  --blue: #1769aa;
+  --orange: #f28c28;
+  --bg: #f2f5f9;
+  --green: #16865b;
+  --red: #c74343;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #192b3d;
+  background: var(--bg);
+}
+header {
+  background: var(--navy);
+  color: white;
+  padding: 22px 5%;
+  border-bottom: 5px solid var(--orange);
+}
+header h1 { margin: 0 0 7px; font-size: 23px; }
+header p { margin: 0; color: #c7d5e4; font-size: 13px; }
+.container { max-width: 1200px; margin: auto; padding: 22px 16px; }
+.top {
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 12px;
+  margin-bottom: 20px;
+}
+h2 { font-size: 18px; margin: 0; }
+.pill {
+  padding: 8px 12px; border-radius: 20px;
+  background: #fff0dc; color: #8d510b;
+  font-size: 12px; font-weight: bold;
+}
+.summary {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 14px; margin-bottom: 22px;
+}
+.panel {
+  background: white; padding: 18px;
+  border-radius: 12px; border: 1px solid #e1e7ef;
+  box-shadow: 0 3px 12px #142d4410;
+}
+.label { font-size: 12px; color: #68798b; }
+.big { font-size: 25px; font-weight: bold; margin-top: 9px; }
+.small { font-size: 12px; color: #7b8998; margin-top: 6px; }
+.grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 14px;
+}
+.channel { border-top: 4px solid var(--blue); }
+.channel .name { font-weight: bold; font-size: 14px; }
+.value { font-size: 28px; font-weight: bold; margin: 17px 0 5px; }
+.unit { font-size: 13px; color: #758497; }
+.status { font-size: 12px; color: var(--green); margin-top: 13px; }
+.chart { margin-top: 22px; }
+canvas { width: 100%; height: 240px; display: block; }
+footer {
+  text-align: center; color: #718094;
+  padding: 24px; font-size: 12px;
+}
+@media(max-width:800px) {
+  .grid { grid-template-columns: repeat(2,1fr); }
+  .summary { grid-template-columns: 1fr; }
+}
+@media(max-width:400px) {
+  .grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>MONITORING ARUS BOCOR</h1>
+  <p>GI SITUBONDO · PEMANTAUAN KABEL POWER TRAFO</p>
+</header>
+
+<main class="container">
+  <div class="top">
+    <h2>Dashboard Pengukuran 12 Kanal</h2>
+    <span class="pill">MODE DEMO · DATA SIMULASI</span>
+  </div>
+
+  <section class="summary">
+    <div class="panel">
+      <div class="label">Jumlah Kanal</div>
+      <div class="big">12</div>
+      <div class="small">3 modul ADS1115 · 4 kanal per modul</div>
+    </div>
+    <div class="panel">
+      <div class="label">Rata-rata Arus</div>
+      <div class="big" id="average">— mA</div>
+      <div class="small">Dari nilai simulasi seluruh kanal</div>
+    </div>
+    <div class="panel">
+      <div class="label">Koneksi Perangkat</div>
+      <div class="big" style="font-size:20px;color:#b7791f">Belum terhubung</div>
+      <div class="small">Menunggu integrasi ESP32 dan server</div>
+    </div>
+  </section>
+
+  <h2 style="margin-bottom:14px">Nilai Arus per Kanal</h2>
+  <section class="grid" id="channels"></section>
+
+  <section class="panel chart">
+    <h2>Grafik Arus 12 Kanal</h2>
+    <p class="small">Grafik nilai contoh, bukan data pengukuran aktual.</p>
+    <canvas id="chart"></canvas>
+  </section>
+</main>
+
+<footer>
+  Monitoring Arus Bocor · GI Situbondo<br>
+  Dashboard demo — belum untuk keputusan operasional.
+</footer>
+
+<script>
+const values = [18.2, 21.5, 16.8, 24.1, 19.7, 22.4,
+                17.9, 20.3, 23.1, 18.8, 21.2, 19.4];
+
+const channels = document.getElementById("channels");
+
+values.forEach((value, index) => {
+  const card = document.createElement("div");
+  card.className = "panel channel";
+  card.innerHTML = `
+    <div class="name">Kanal ${String(index + 1).padStart(2, "0")}</div>
+    <div class="value">${value.toFixed(1)} <span class="unit">mA</span></div>
+    <div class="label">Nilai simulasi</div>
+    <div class="status">● Demo aktif</div>
+  `;
+  channels.appendChild(card);
+});
+
+const average = values.reduce((sum, v) => sum + v, 0) / values.length;
+document.getElementById("average").textContent = average.toFixed(1) + " mA";
+
+function drawChart() {
+  const canvas = document.getElementById("chart");
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = 240 * dpr;
+
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const w = rect.width, h = 240;
+  const left = 38, right = 12, top = 15, bottom = 35;
+  const max = 30;
+  ctx.clearRect(0, 0, w, h);
+  ctx.font = "11px Arial";
+  ctx.textAlign = "right";
+
+  for (let v = 0; v <= max; v += 10) {
+    const y = h - bottom - (v / max) * (h - top - bottom);
+    ctx.strokeStyle = "#e5ebf2";
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(w - right, y);
+    ctx.stroke();
+    ctx.fillStyle = "#718094";
+    ctx.fillText(v, left - 8, y + 4);
+  }
+
+  const slot = (w - left - right) / values.length;
+  const bw = Math.min(24, slot * 0.62);
+
+  values.forEach((v, i) => {
+    const bh = (v / max) * (h - top - bottom);
+    const x = left + i * slot + (slot - bw) / 2;
+    const y = h - bottom - bh;
+    ctx.fillStyle = "#1769aa";
+    ctx.fillRect(x, y, bw, bh);
+    ctx.fillStyle = "#526477";
+    ctx.textAlign = "center";
+    ctx.fillText(i + 1, x + bw / 2, h - 13);
+  });
+}
+drawChart();
+window.addEventListener("resize", drawChart);
+</script>
+</body>
+</html>

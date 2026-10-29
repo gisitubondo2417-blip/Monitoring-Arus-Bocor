@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -47,7 +46,10 @@
       font-size: clamp(23px, 4vw, 36px);
     }
 
-    .subtitle { color: var(--muted); font-size: 14px; }
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+    }
 
     main {
       max-width: 1200px;
@@ -102,7 +104,10 @@
       gap: 8px;
     }
 
-    .channel { font-size: 14px; font-weight: bold; }
+    .channel {
+      font-size: 14px;
+      font-weight: bold;
+    }
 
     .dot {
       width: 8px;
@@ -120,8 +125,15 @@
       overflow-wrap: anywhere;
     }
 
-    .unit { color: var(--muted); font-size: 13px; }
-    .status { color: var(--muted); font-size: 12px; }
+    .unit {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 12px;
+    }
 
     .section {
       background: var(--panel);
@@ -139,7 +151,11 @@
       width: 100%;
     }
 
-    canvas { width: 100%; height: 100%; display: block; }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
 
     .meta {
       display: grid;
@@ -153,8 +169,16 @@
       padding: 14px;
     }
 
-    .meta-label { color: var(--muted); font-size: 12px; }
-    .meta-value { margin-top: 7px; font-size: 14px; overflow-wrap: anywhere; }
+    .meta-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta-value {
+      margin-top: 7px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
 
     .note {
       margin-top: 18px;
@@ -172,7 +196,10 @@
     }
 
     @media (max-width: 650px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .card { padding: 13px; }
       .meta { grid-template-columns: 1fr; }
     }
@@ -184,10 +211,13 @@
 </head>
 
 <body>
+
 <header>
   <div class="brand">GI SITUBONDO · ENGINEERING MONITORING</div>
   <h1>MONITORING ARUS BOCOR</h1>
-  <div class="subtitle">Sistem pemantauan arus bocor kabel · 20 kV</div>
+  <div class="subtitle">
+    Sistem pemantauan arus bocor kabel · 20 kV
+  </div>
 </header>
 
 <main>
@@ -195,10 +225,13 @@
     <div>
       <strong>Dashboard Realtime</strong>
       <div class="subtitle" style="margin-top:6px">
-        Pembaruan otomatis setiap 60 detik
+        Pembaruan otomatis setiap 10 detik
       </div>
     </div>
-    <span id="connection" class="pill">MENGHUBUNGKAN...</span>
+
+    <span id="connection" class="pill">
+      MENGHUBUNGKAN...
+    </span>
   </div>
 
   <h2>Pengukuran per Kanal</h2>
@@ -206,30 +239,45 @@
 
   <section class="section">
     <h2>Grafik Tren Arus Bocor</h2>
+
     <div class="subtitle" style="margin-bottom:14px">
-      Rekaman nilai yang diterima dashboard selama halaman terbuka.
+      Riwayat hingga 60 titik per kanal, disimpan di browser ini
+      agar tetap ada setelah halaman di-reload.
     </div>
+
     <div class="chart-wrap">
       <canvas id="chart"></canvas>
     </div>
+
     <div class="note">
-      Grafik ini menyimpan snapshot lokal pada halaman, bukan seluruh
-      riwayat Google Sheets. Maksimal 60 titik per kanal.
+      Grafik menyimpan maksimal 60 titik per kanal di penyimpanan
+      browser ini. Riwayat ini tidak sama dengan seluruh riwayat
+      Google Sheets dan tidak otomatis berpindah ke browser atau
+      perangkat lain.
     </div>
   </section>
 
   <section class="section">
     <h2>Status Sistem</h2>
+
     <div class="meta">
       <div class="meta-box">
         <div class="meta-label">Waktu data dari perangkat</div>
-        <div class="meta-value" id="timestamp">Menunggu data...</div>
+        <div class="meta-value" id="timestamp">
+          Menunggu data...
+        </div>
       </div>
+
       <div class="meta-box">
-        <div class="meta-label">Pembaruan terakhir di dashboard</div>
-        <div class="meta-value" id="updated">Belum ada</div>
+        <div class="meta-label">
+          Pembaruan terakhir di dashboard
+        </div>
+        <div class="meta-value" id="updated">
+          Belum ada
+        </div>
       </div>
     </div>
+
     <div class="note" id="message">
       Menghubungkan ke sumber data...
     </div>
@@ -242,7 +290,7 @@
 </footer>
 
 <script>
-  // URL Web App Apps Script milikmu.
+  // URL Web App Google Apps Script
   const SCRIPT_URL =
     'https://script.google.com/macros/s/AKfycbzl4t-T2SYd2Z7aQlLBN_yRN1fa--F-1t3yvKQaxeP1ikoMRFgBnfLYZhrFHG8dBFrTvg/exec';
 
@@ -252,8 +300,12 @@
     'T-Core 1', 'T-Core 2', 'T-Core 3'
   ];
 
-  // Baru ada ADS1115 alamat 0x48 untuk tiga kanal R.
-  const installed = [true, true, true, false, false, false, false, false, false];
+  // Saat ini baru tiga kanal R yang terpasang.
+  const installed = [
+    true, true, true,
+    false, false, false,
+    false, false, false
+  ];
 
   const colors = [
     '#36d399', '#ff8a24', '#49a5ff',
@@ -261,9 +313,69 @@
     '#36d399', '#ff8a24', '#49a5ff'
   ];
 
-  const history = Array.from({ length: 9 }, () => []);
-  const times = [];
-  let lastTimestamp = '';
+  // Kunci penyimpanan riwayat lokal browser.
+  const STORAGE_KEY = 'giSitubondoArusBocorHistory_v1';
+
+  // Membaca riwayat yang sudah tersimpan.
+  function loadSavedHistory() {
+    try {
+      const saved = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || 'null'
+      );
+
+      if (
+        saved &&
+        Array.isArray(saved.history) &&
+        Array.isArray(saved.times)
+      ) {
+        const history = Array.from(
+          { length: 9 },
+          (_, i) =>
+            Array.isArray(saved.history[i])
+              ? saved.history[i]
+                  .filter(v => Number.isFinite(v))
+                  .slice(-60)
+              : []
+        );
+
+        const times = saved.times.slice(-60);
+
+        return { history, times };
+      }
+    } catch (e) {
+      console.warn(
+        'Riwayat lokal tidak dapat dibaca:',
+        e
+      );
+    }
+
+    return {
+      history: Array.from({ length: 9 }, () => []),
+      times: []
+    };
+  }
+
+  // Menyimpan riwayat ke browser.
+  function saveHistory() {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ history, times })
+      );
+    } catch (e) {
+      console.warn(
+        'Riwayat lokal tidak dapat disimpan:',
+        e
+      );
+
+      document.getElementById('message').textContent =
+        'Penyimpanan riwayat browser tidak tersedia atau penuh.';
+    }
+  }
+
+  const savedHistory = loadSavedHistory();
+  const history = savedHistory.history;
+  const times = savedHistory.times;
 
   const channelsEl = document.getElementById('channels');
 
@@ -275,6 +387,7 @@
           <span class="dot"></span>Menunggu
         </span>
       </div>
+
       <div class="value" id="value${i}">--</div>
       <div class="unit">mA</div>
     </article>
@@ -286,9 +399,11 @@
     el.className = 'pill ' + (cls || '');
   }
 
+  // Mengambil data dari Google Apps Script.
   function requestData() {
     const callbackName =
-      '__arusBocorCallback_' + Date.now() + '_' +
+      '__arusBocorCallback_' +
+      Date.now() + '_' +
       Math.random().toString(36).slice(2);
 
     const script = document.createElement('script');
@@ -296,7 +411,9 @@
 
     const timeout = setTimeout(() => {
       finish();
+
       setConnection('GAGAL TERHUBUNG', 'error');
+
       document.getElementById('message').textContent =
         'Data belum berhasil dibaca. Periksa deployment Apps Script, ' +
         'akses Anyone, dan fungsi doGet.';
@@ -304,19 +421,29 @@
 
     function finish() {
       if (finished) return;
+
       finished = true;
       clearTimeout(timeout);
       script.remove();
-      try { delete window[callbackName]; } catch (_) {}
+
+      try {
+        delete window[callbackName];
+      } catch (_) {}
     }
 
     window[callbackName] = data => {
       finish();
 
-      if (!data || data.ok !== true || !Array.isArray(data.channels)) {
+      if (
+        !data ||
+        data.ok !== true ||
+        !Array.isArray(data.channels)
+      ) {
         setConnection('RESPONS TIDAK VALID', 'error');
+
         document.getElementById('message').textContent =
           'Respons sumber data tidak sesuai format yang diharapkan.';
+
         return;
       }
 
@@ -325,90 +452,147 @@
 
     script.onerror = () => {
       finish();
+
       setConnection('GAGAL TERHUBUNG', 'error');
+
       document.getElementById('message').textContent =
         'Tidak dapat memuat data dari Apps Script.';
     };
 
-    script.src = SCRIPT_URL + '?callback=' +
-      encodeURIComponent(callbackName) + '&_=' + Date.now();
+    script.src =
+      SCRIPT_URL +
+      '?callback=' +
+      encodeURIComponent(callbackName) +
+      '&_=' + Date.now();
 
     document.head.appendChild(script);
   }
 
+  // Memperbarui tampilan dan menyimpan riwayat grafik.
   function renderData(data) {
     const vals = data.channels;
+    const sourceTimestamp =
+      data.timestamp || new Date().toISOString();
+
+    // Tambahkan titik grafik hanya jika timestamp berubah.
+    const isNewPoint =
+      times.length === 0 ||
+      times[times.length - 1] !== sourceTimestamp;
 
     vals.forEach((v, i) => {
-      const valueEl = document.getElementById('value' + i);
-      const stateEl = document.getElementById('state' + i);
+      const valueEl =
+        document.getElementById('value' + i);
 
-      if (!installed[i] || v === null || v === '' ||
-          !Number.isFinite(Number(v))) {
+      const stateEl =
+        document.getElementById('state' + i);
+
+      if (
+        !installed[i] ||
+        v === null ||
+        v === '' ||
+        !Number.isFinite(Number(v))
+      ) {
         valueEl.textContent = 'N/A';
-        stateEl.innerHTML = '<span class="dot"></span>Belum tersedia';
+
+        stateEl.innerHTML =
+          '<span class="dot"></span>Belum tersedia';
+
         return;
       }
 
       const num = Number(v);
+
       valueEl.textContent = num.toLocaleString('id-ID', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
-      stateEl.innerHTML =
-        '<span class="dot" style="background:var(--green)"></span>Terbaca';
 
-      // Hindari duplikasi titik bila data yang sama terambil ulang.
-      if (history[i].length === 0 ||
-          times[times.length - 1] !== data.timestamp) {
+      stateEl.innerHTML =
+        '<span class="dot" style="background:var(--green)"></span>' +
+        'Terbaca';
+
+      if (isNewPoint) {
         history[i].push(num);
-        if (history[i].length > 60) history[i].shift();
+
+        if (history[i].length > 60) {
+          history[i].shift();
+        }
       }
     });
 
-    if (times.length === 0 ||
-        times[times.length - 1] !== data.timestamp) {
-      times.push(data.timestamp || new Date().toISOString());
-      if (times.length > 60) times.shift();
+    if (isNewPoint) {
+      times.push(sourceTimestamp);
+
+      if (times.length > 60) {
+        times.shift();
+      }
+
+      saveHistory();
     }
 
-    lastTimestamp = data.timestamp || 'Tidak tersedia';
-    document.getElementById('timestamp').textContent = lastTimestamp;
+    document.getElementById('timestamp').textContent =
+      sourceTimestamp;
+
     document.getElementById('updated').textContent =
-      new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+      new Date().toLocaleString('id-ID', {
+        timeZone: 'Asia/Jakarta'
+      });
 
     document.getElementById('message').textContent =
-      'Status sumber data: ' + (data.status || 'Tidak diketahui') +
-      '. Grafik mencatat data yang diterima saat halaman terbuka.';
+      'Status sumber data: ' +
+      (data.status || 'Tidak diketahui') +
+      '. Grafik mencatat data baru yang diterima saat halaman terbuka.';
 
     setConnection('TERHUBUNG', 'online');
+
     drawChart();
   }
 
+  // Menggambar grafik tren.
   function drawChart() {
     const canvas = document.getElementById('chart');
     const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
 
-    canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+    canvas.width = Math.max(
+      1,
+      Math.floor(rect.width * dpr)
+    );
+
+    canvas.height = Math.max(
+      1,
+      Math.floor(rect.height * dpr)
+    );
 
     const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const w = rect.width;
     const h = rect.height;
-    const left = 42, right = 10, top = 15, bottom = 30;
+
+    const left = 42;
+    const right = 10;
+    const top = 15;
+    const bottom = 30;
+
     const plotW = w - left - right;
     const plotH = h - top - bottom;
 
     ctx.clearRect(0, 0, w, h);
 
     const all = history.flat();
+
     if (!all.length) {
       ctx.fillStyle = '#9fb3ca';
       ctx.font = '13px Arial';
-      ctx.fillText('Menunggu data pengukuran...', left, h / 2);
+
+      ctx.fillText(
+        'Menunggu data pengukuran...',
+        left,
+        h / 2
+      );
+
       return;
     }
 
@@ -419,9 +603,13 @@
     ctx.strokeStyle = '#28425f';
     ctx.fillStyle = '#9fb3ca';
 
+    // Garis grid dan label sumbu Y.
     for (let i = 0; i <= 4; i++) {
       const y = top + plotH * i / 4;
-      const label = (max * (1 - i / 4)).toLocaleString('id-ID', {
+
+      const label = (
+        max * (1 - i / 4)
+      ).toLocaleString('id-ID', {
         maximumFractionDigits: 1
       });
 
@@ -429,9 +617,11 @@
       ctx.moveTo(left, y);
       ctx.lineTo(w - right, y);
       ctx.stroke();
+
       ctx.fillText(label, 2, y + 4);
     }
 
+    // Garis setiap kanal yang sudah terpasang.
     history.forEach((arr, idx) => {
       if (!installed[idx] || arr.length < 1) return;
 
@@ -443,23 +633,39 @@
         const x = arr.length === 1
           ? left + plotW
           : left + plotW * j / (arr.length - 1);
-        const y = top + plotH * (1 - value / max);
 
-        if (j === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const y =
+          top + plotH * (1 - value / max);
+
+        if (j === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       });
 
       ctx.stroke();
     });
 
     ctx.fillStyle = '#9fb3ca';
-    ctx.fillText('Data terbaru →', Math.max(left, w - 100), h - 7);
+    ctx.fillText(
+      'Data terbaru →',
+      Math.max(left, w - 100),
+      h - 7
+    );
   }
 
   window.addEventListener('resize', drawChart);
 
+  // Ambil data saat halaman dibuka.
   requestData();
-  setInterval(requestData, 60000);
+
+  // Ambil data ulang setiap 10 detik.
+  setInterval(requestData, 10000);
+
+  // Gambar ulang riwayat yang tersimpan saat halaman dibuka.
+  drawChart();
 </script>
+
 </body>
 </html>

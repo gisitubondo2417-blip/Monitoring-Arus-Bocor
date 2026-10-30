@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -195,17 +196,81 @@
       font-size: 12px;
     }
 
+    /* TABEL RIWAYAT REKAP */
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+      font-size: 13px;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 11px 9px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .history-table th:first-child,
+    .history-table td:first-child,
+    .history-table th:nth-child(2),
+    .history-table td:nth-child(2) {
+      text-align: left;
+    }
+
+    .history-table th {
+      color: var(--muted);
+      font-weight: bold;
+    }
+
+    .history-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .history-tools {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 16px;
+    }
+
+    .history-tools select {
+      background: #0b223c;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 12px;
+    }
+
+    .history-empty {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 16px 0;
+    }
+
     @media (max-width: 650px) {
       .grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .card { padding: 13px; }
-      .meta { grid-template-columns: 1fr; }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 380px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -213,17 +278,25 @@
 <body>
 
 <header>
-  <div class="brand">GI SITUBONDO · ENGINEERING MONITORING</div>
+  <div class="brand">
+    GI SITUBONDO · ENGINEERING MONITORING
+  </div>
+
   <h1>MONITORING ARUS BOCOR</h1>
+
   <div class="subtitle">
     Sistem pemantauan arus bocor kabel · 20 kV
   </div>
 </header>
 
 <main>
+
+  <!-- DASHBOARD REALTIME -->
+
   <div class="topline">
     <div>
       <strong>Dashboard Realtime</strong>
+
       <div class="subtitle" style="margin-top:6px">
         Pembaruan otomatis setiap 10 detik
       </div>
@@ -235,9 +308,14 @@
   </div>
 
   <h2>Pengukuran per Kanal</h2>
+
   <div id="channels" class="grid"></div>
 
+
+  <!-- GRAFIK REALTIME -->
+
   <section class="section">
+
     <h2>Grafik Tren Arus Bocor</h2>
 
     <div class="subtitle" style="margin-bottom:14px">
@@ -252,17 +330,93 @@
     <div class="note">
       Grafik menyimpan maksimal 60 titik per kanal di penyimpanan
       browser ini. Riwayat ini tidak sama dengan seluruh riwayat
-      Google Sheets dan tidak otomatis berpindah ke browser atau
-      perangkat lain.
+      Google Sheets dan tidak otomatis berpindah ke perangkat lain.
     </div>
+
   </section>
 
+
+  <!-- REKAP HARIAN 08.00 -->
+
   <section class="section">
+
+    <h2>Rekap Harian Pukul 08.00 WIB</h2>
+
+    <div class="subtitle">
+      Data pengukuran terakhir yang tercatat sampai pukul 08.00 WIB setiap hari.
+    </div>
+
+    <div class="history-tools">
+
+      <label for="recapDate" class="subtitle">
+        Pilih tanggal:
+      </label>
+
+      <select id="recapDate">
+        <option value="">Memuat riwayat...</option>
+      </select>
+
+      <span id="recapStatus" class="pill">
+        MEMUAT REKAP...
+      </span>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table class="history-table">
+
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Waktu Data</th>
+            <th>Status</th>
+            <th>R-Core 1</th>
+            <th>R-Core 2</th>
+            <th>R-Core 3</th>
+            <th>S-Core 1</th>
+            <th>S-Core 2</th>
+            <th>S-Core 3</th>
+            <th>T-Core 1</th>
+            <th>T-Core 2</th>
+            <th>T-Core 3</th>
+          </tr>
+        </thead>
+
+        <tbody id="recapBody">
+          <tr>
+            <td colspan="12" class="history-empty">
+              Mengambil data rekap...
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div class="note">
+      Rekap dibaca langsung dari tab Google Sheets
+      <b>Rekap_08</b>. Riwayat tersimpan di server dan
+      dapat diakses dari HP maupun laptop.
+    </div>
+
+  </section>
+
+
+  <!-- STATUS SISTEM -->
+
+  <section class="section">
+
     <h2>Status Sistem</h2>
 
     <div class="meta">
+
       <div class="meta-box">
-        <div class="meta-label">Waktu data dari perangkat</div>
+        <div class="meta-label">
+          Waktu data dari perangkat
+        </div>
+
         <div class="meta-value" id="timestamp">
           Menunggu data...
         </div>
@@ -272,16 +426,20 @@
         <div class="meta-label">
           Pembaruan terakhir di dashboard
         </div>
+
         <div class="meta-value" id="updated">
           Belum ada
         </div>
       </div>
+
     </div>
 
     <div class="note" id="message">
       Menghubungkan ke sumber data...
     </div>
+
   </section>
+
 </main>
 
 <footer>
@@ -289,382 +447,739 @@
   Data pengukuran untuk pemantauan teknis.
 </footer>
 
+
 <script>
-  // URL Web App Google Apps Script
-  const SCRIPT_URL =
-    'https://script.google.com/macros/s/AKfycbzl4t-T2SYd2Z7aQlLBN_yRN1fa--F-1t3yvKQaxeP1ikoMRFgBnfLYZhrFHG8dBFrTvg/exec';
 
-  const names = [
-    'R-Core 1', 'R-Core 2', 'R-Core 3',
-    'S-Core 1', 'S-Core 2', 'S-Core 3',
-    'T-Core 1', 'T-Core 2', 'T-Core 3'
-  ];
+/* =====================================
+   KONFIGURASI DASHBOARD
+===================================== */
 
-  // Saat ini baru tiga kanal R yang terpasang.
-  const installed = [
-    true, true, true,
-    false, false, false,
-    false, false, false
-  ];
+// URL Web App Apps Script
+const SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbzl4t-T2SYd2Z7aQlLBN_yRN1fa--F-1t3yvKQaxeP1ikoMRFgBnfLYZhrFHG8dBFrTvg/exec';
 
-  const colors = [
-    '#36d399', '#ff8a24', '#49a5ff',
-    '#36d399', '#ff8a24', '#49a5ff',
-    '#36d399', '#ff8a24', '#49a5ff'
-  ];
+const names = [
+  'R-Core 1', 'R-Core 2', 'R-Core 3',
+  'S-Core 1', 'S-Core 2', 'S-Core 3',
+  'T-Core 1', 'T-Core 2', 'T-Core 3'
+];
 
-  // Kunci penyimpanan riwayat lokal browser.
-  const STORAGE_KEY = 'giSitubondoArusBocorHistory_v1';
+// Tiga kanal R saat ini terpasang.
+const installed = [
+  true, true, true,
+  false, false, false,
+  false, false, false
+];
 
-  // Membaca riwayat yang sudah tersimpan.
-  function loadSavedHistory() {
+const colors = [
+  '#36d399', '#ff8a24', '#49a5ff',
+  '#36d399', '#ff8a24', '#49a5ff',
+  '#36d399', '#ff8a24', '#49a5ff'
+];
+
+
+/* =====================================
+   PENYIMPANAN RIWAYAT GRAFIK LOKAL
+===================================== */
+
+const STORAGE_KEY =
+  'giSitubondoArusBocorHistory_v1';
+
+function loadSavedHistory() {
+
+  try {
+
+    const saved = JSON.parse(
+      localStorage.getItem(STORAGE_KEY) || 'null'
+    );
+
+    if (
+      saved &&
+      Array.isArray(saved.history) &&
+      Array.isArray(saved.times)
+    ) {
+
+      const history = Array.from(
+        { length: 9 },
+        (_, i) =>
+          Array.isArray(saved.history[i])
+            ? saved.history[i]
+                .filter(v => Number.isFinite(v))
+                .slice(-60)
+            : []
+      );
+
+      const times = saved.times.slice(-60);
+
+      return { history, times };
+
+    }
+
+  } catch (e) {
+
+    console.warn(
+      'Riwayat lokal tidak dapat dibaca:',
+      e
+    );
+
+  }
+
+  return {
+    history: Array.from({ length: 9 }, () => []),
+    times: []
+  };
+
+}
+
+
+function saveHistory() {
+
+  try {
+
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ history, times })
+    );
+
+  } catch (e) {
+
+    console.warn(
+      'Riwayat lokal tidak dapat disimpan:',
+      e
+    );
+
+  }
+
+}
+
+
+const savedHistory = loadSavedHistory();
+
+const history = savedHistory.history;
+const times = savedHistory.times;
+
+
+/* =====================================
+   MEMBUAT KARTU KANAL
+===================================== */
+
+const channelsEl =
+  document.getElementById('channels');
+
+channelsEl.innerHTML = names.map((name, i) => `
+
+  <article class="card">
+
+    <div class="card-top">
+
+      <span class="channel">${name}</span>
+
+      <span class="status" id="state${i}">
+        <span class="dot"></span>Menunggu
+      </span>
+
+    </div>
+
+    <div class="value" id="value${i}">
+      --
+    </div>
+
+    <div class="unit">
+      mA
+    </div>
+
+  </article>
+
+`).join('');
+
+
+/* =====================================
+   STATUS KONEKSI
+===================================== */
+
+function setConnection(text, cls) {
+
+  const el =
+    document.getElementById('connection');
+
+  el.textContent = text;
+  el.className = 'pill ' + (cls || '');
+
+}
+
+
+/* =====================================
+   MENGAMBIL DATA REALTIME
+===================================== */
+
+function requestData() {
+
+  const callbackName =
+    '__arusBocorCallback_' +
+    Date.now() + '_' +
+    Math.random().toString(36).slice(2);
+
+  const script = document.createElement('script');
+
+  let finished = false;
+
+  const timeout = setTimeout(() => {
+
+    finish();
+
+    setConnection(
+      'GAGAL TERHUBUNG',
+      'error'
+    );
+
+    document.getElementById('message').textContent =
+      'Data belum berhasil dibaca. Periksa deployment Apps Script dan akses Anyone.';
+
+  }, 15000);
+
+
+  function finish() {
+
+    if (finished) return;
+
+    finished = true;
+
+    clearTimeout(timeout);
+
+    script.remove();
+
     try {
-      const saved = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || 'null'
+      delete window[callbackName];
+    } catch (_) {}
+
+  }
+
+
+  window[callbackName] = data => {
+
+    finish();
+
+    if (
+      !data ||
+      data.ok !== true ||
+      !Array.isArray(data.channels)
+    ) {
+
+      setConnection(
+        'RESPONS TIDAK VALID',
+        'error'
       );
 
-      if (
-        saved &&
-        Array.isArray(saved.history) &&
-        Array.isArray(saved.times)
-      ) {
-        const history = Array.from(
-          { length: 9 },
-          (_, i) =>
-            Array.isArray(saved.history[i])
-              ? saved.history[i]
-                  .filter(v => Number.isFinite(v))
-                  .slice(-60)
-              : []
-        );
+      return;
 
-        const times = saved.times.slice(-60);
-
-        return { history, times };
-      }
-    } catch (e) {
-      console.warn(
-        'Riwayat lokal tidak dapat dibaca:',
-        e
-      );
     }
 
-    return {
-      history: Array.from({ length: 9 }, () => []),
-      times: []
-    };
-  }
+    renderData(data);
 
-  // Menyimpan riwayat ke browser.
-  function saveHistory() {
-    try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ history, times })
-      );
-    } catch (e) {
-      console.warn(
-        'Riwayat lokal tidak dapat disimpan:',
-        e
-      );
+  };
 
-      document.getElementById('message').textContent =
-        'Penyimpanan riwayat browser tidak tersedia atau penuh.';
-    }
-  }
 
-  const savedHistory = loadSavedHistory();
-  const history = savedHistory.history;
-  const times = savedHistory.times;
+  script.onerror = () => {
 
-  const channelsEl = document.getElementById('channels');
+    finish();
 
-  channelsEl.innerHTML = names.map((name, i) => `
-    <article class="card">
-      <div class="card-top">
-        <span class="channel">${name}</span>
-        <span class="status" id="state${i}">
-          <span class="dot"></span>Menunggu
-        </span>
-      </div>
+    setConnection(
+      'GAGAL TERHUBUNG',
+      'error'
+    );
 
-      <div class="value" id="value${i}">--</div>
-      <div class="unit">mA</div>
-    </article>
-  `).join('');
+  };
 
-  function setConnection(text, cls) {
-    const el = document.getElementById('connection');
-    el.textContent = text;
-    el.className = 'pill ' + (cls || '');
-  }
 
-  // Mengambil data dari Google Apps Script.
-  function requestData() {
-    const callbackName =
-      '__arusBocorCallback_' +
-      Date.now() + '_' +
-      Math.random().toString(36).slice(2);
+  script.src =
+    SCRIPT_URL +
+    '?callback=' +
+    encodeURIComponent(callbackName) +
+    '&_=' + Date.now();
 
-    const script = document.createElement('script');
-    let finished = false;
+  document.head.appendChild(script);
 
-    const timeout = setTimeout(() => {
-      finish();
+}
 
-      setConnection('GAGAL TERHUBUNG', 'error');
 
-      document.getElementById('message').textContent =
-        'Data belum berhasil dibaca. Periksa deployment Apps Script, ' +
-        'akses Anyone, dan fungsi doGet.';
-    }, 15000);
+/* =====================================
+   MEMPERBARUI DATA REALTIME
+===================================== */
 
-    function finish() {
-      if (finished) return;
+function renderData(data) {
 
-      finished = true;
-      clearTimeout(timeout);
-      script.remove();
+  const vals = data.channels;
 
-      try {
-        delete window[callbackName];
-      } catch (_) {}
+  const sourceTimestamp =
+    data.timestamp || new Date().toISOString();
+
+  const isNewPoint =
+    times.length === 0 ||
+    times[times.length - 1] !== sourceTimestamp;
+
+
+  vals.forEach((v, i) => {
+
+    const valueEl =
+      document.getElementById('value' + i);
+
+    const stateEl =
+      document.getElementById('state' + i);
+
+
+    if (
+      !installed[i] ||
+      v === null ||
+      v === '' ||
+      !Number.isFinite(Number(v))
+    ) {
+
+      valueEl.textContent = 'N/A';
+
+      stateEl.innerHTML =
+        '<span class="dot"></span>Belum tersedia';
+
+      return;
+
     }
 
-    window[callbackName] = data => {
-      finish();
 
-      if (
-        !data ||
-        data.ok !== true ||
-        !Array.isArray(data.channels)
-      ) {
-        setConnection('RESPONS TIDAK VALID', 'error');
+    const num = Number(v);
 
-        document.getElementById('message').textContent =
-          'Respons sumber data tidak sesuai format yang diharapkan.';
-
-        return;
-      }
-
-      renderData(data);
-    };
-
-    script.onerror = () => {
-      finish();
-
-      setConnection('GAGAL TERHUBUNG', 'error');
-
-      document.getElementById('message').textContent =
-        'Tidak dapat memuat data dari Apps Script.';
-    };
-
-    script.src =
-      SCRIPT_URL +
-      '?callback=' +
-      encodeURIComponent(callbackName) +
-      '&_=' + Date.now();
-
-    document.head.appendChild(script);
-  }
-
-  // Memperbarui tampilan dan menyimpan riwayat grafik.
-  function renderData(data) {
-    const vals = data.channels;
-    const sourceTimestamp =
-      data.timestamp || new Date().toISOString();
-
-    // Tambahkan titik grafik hanya jika timestamp berubah.
-    const isNewPoint =
-      times.length === 0 ||
-      times[times.length - 1] !== sourceTimestamp;
-
-    vals.forEach((v, i) => {
-      const valueEl =
-        document.getElementById('value' + i);
-
-      const stateEl =
-        document.getElementById('state' + i);
-
-      if (
-        !installed[i] ||
-        v === null ||
-        v === '' ||
-        !Number.isFinite(Number(v))
-      ) {
-        valueEl.textContent = 'N/A';
-
-        stateEl.innerHTML =
-          '<span class="dot"></span>Belum tersedia';
-
-        return;
-      }
-
-      const num = Number(v);
-
-      valueEl.textContent = num.toLocaleString('id-ID', {
+    valueEl.textContent =
+      num.toLocaleString('id-ID', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
 
-      stateEl.innerHTML =
-        '<span class="dot" style="background:var(--green)"></span>' +
-        'Terbaca';
 
-      if (isNewPoint) {
-        history[i].push(num);
+    stateEl.innerHTML =
+      '<span class="dot" style="background:var(--green)"></span>Terbaca';
 
-        if (history[i].length > 60) {
-          history[i].shift();
-        }
-      }
-    });
 
     if (isNewPoint) {
-      times.push(sourceTimestamp);
 
-      if (times.length > 60) {
-        times.shift();
+      history[i].push(num);
+
+      if (history[i].length > 60) {
+        history[i].shift();
       }
 
-      saveHistory();
     }
 
-    document.getElementById('timestamp').textContent =
-      sourceTimestamp;
+  });
 
-    document.getElementById('updated').textContent =
-      new Date().toLocaleString('id-ID', {
-        timeZone: 'Asia/Jakarta'
-      });
 
-    document.getElementById('message').textContent =
-      'Status sumber data: ' +
-      (data.status || 'Tidak diketahui') +
-      '. Grafik mencatat data baru yang diterima saat halaman terbuka.';
+  if (isNewPoint) {
 
-    setConnection('TERHUBUNG', 'online');
+    times.push(sourceTimestamp);
 
-    drawChart();
+    if (times.length > 60) {
+      times.shift();
+    }
+
+    saveHistory();
+
   }
 
-  // Menggambar grafik tren.
-  function drawChart() {
-    const canvas = document.getElementById('chart');
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
 
-    canvas.width = Math.max(
-      1,
-      Math.floor(rect.width * dpr)
-    );
+  document.getElementById('timestamp').textContent =
+    sourceTimestamp;
 
-    canvas.height = Math.max(
-      1,
-      Math.floor(rect.height * dpr)
-    );
+  document.getElementById('updated').textContent =
+    new Date().toLocaleString('id-ID', {
+      timeZone: 'Asia/Jakarta'
+    });
 
-    const ctx = canvas.getContext('2d');
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  document.getElementById('message').textContent =
+    'Status sumber data: ' +
+    (data.status || 'Tidak diketahui') +
+    '. Grafik mencatat data baru yang diterima saat halaman terbuka.';
 
-    const w = rect.width;
-    const h = rect.height;
 
-    const left = 42;
-    const right = 10;
-    const top = 15;
-    const bottom = 30;
+  setConnection('TERHUBUNG', 'online');
 
-    const plotW = w - left - right;
-    const plotH = h - top - bottom;
+  drawChart();
 
-    ctx.clearRect(0, 0, w, h);
+}
 
-    const all = history.flat();
 
-    if (!all.length) {
-      ctx.fillStyle = '#9fb3ca';
-      ctx.font = '13px Arial';
+/* =====================================
+   MENGGAMBAR GRAFIK REALTIME
+===================================== */
 
-      ctx.fillText(
-        'Menunggu data pengukuran...',
-        left,
-        h / 2
-      );
+function drawChart() {
 
-      return;
-    }
+  const canvas =
+    document.getElementById('chart');
 
-    const max = Math.max(10, ...all) * 1.15;
+  const rect =
+    canvas.getBoundingClientRect();
 
-    ctx.font = '11px Arial';
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#28425f';
+  const dpr =
+    window.devicePixelRatio || 1;
+
+
+  canvas.width =
+    Math.max(1, Math.floor(rect.width * dpr));
+
+  canvas.height =
+    Math.max(1, Math.floor(rect.height * dpr));
+
+
+  const ctx = canvas.getContext('2d');
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+
+  const w = rect.width;
+  const h = rect.height;
+
+  const left = 42;
+  const right = 10;
+  const top = 15;
+  const bottom = 30;
+
+  const plotW = w - left - right;
+  const plotH = h - top - bottom;
+
+
+  ctx.clearRect(0, 0, w, h);
+
+
+  const all = history.flat();
+
+  if (!all.length) {
+
     ctx.fillStyle = '#9fb3ca';
+    ctx.font = '13px Arial';
 
-    // Garis grid dan label sumbu Y.
-    for (let i = 0; i <= 4; i++) {
-      const y = top + plotH * i / 4;
+    ctx.fillText(
+      'Menunggu data pengukuran...',
+      left,
+      h / 2
+    );
 
-      const label = (
-        max * (1 - i / 4)
-      ).toLocaleString('id-ID', {
+    return;
+
+  }
+
+
+  const max =
+    Math.max(10, ...all) * 1.15;
+
+
+  ctx.font = '11px Arial';
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#28425f';
+  ctx.fillStyle = '#9fb3ca';
+
+
+  for (let i = 0; i <= 4; i++) {
+
+    const y =
+      top + plotH * i / 4;
+
+    const label =
+      (max * (1 - i / 4)).toLocaleString('id-ID', {
         maximumFractionDigits: 1
       });
 
-      ctx.beginPath();
-      ctx.moveTo(left, y);
-      ctx.lineTo(w - right, y);
-      ctx.stroke();
 
-      ctx.fillText(label, 2, y + 4);
-    }
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(w - right, y);
+    ctx.stroke();
 
-    // Garis setiap kanal yang sudah terpasang.
-    history.forEach((arr, idx) => {
-      if (!installed[idx] || arr.length < 1) return;
+    ctx.fillText(label, 2, y + 4);
 
-      ctx.strokeStyle = colors[idx];
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-
-      arr.forEach((value, j) => {
-        const x = arr.length === 1
-          ? left + plotW
-          : left + plotW * j / (arr.length - 1);
-
-        const y =
-          top + plotH * (1 - value / max);
-
-        if (j === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      });
-
-      ctx.stroke();
-    });
-
-    ctx.fillStyle = '#9fb3ca';
-    ctx.fillText(
-      'Data terbaru →',
-      Math.max(left, w - 100),
-      h - 7
-    );
   }
 
-  window.addEventListener('resize', drawChart);
 
-  // Ambil data saat halaman dibuka.
-  requestData();
+  history.forEach((arr, idx) => {
 
-  // Ambil data ulang setiap 10 detik.
-  setInterval(requestData, 10000);
+    if (!installed[idx] || arr.length < 1) return;
 
-  // Gambar ulang riwayat yang tersimpan saat halaman dibuka.
-  drawChart();
+    ctx.strokeStyle = colors[idx];
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+
+    arr.forEach((value, j) => {
+
+      const x = arr.length === 1
+        ? left + plotW
+        : left + plotW * j / (arr.length - 1);
+
+      const y =
+        top + plotH * (1 - value / max);
+
+
+      if (j === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+
+    });
+
+
+    ctx.stroke();
+
+  });
+
+
+  ctx.fillStyle = '#9fb3ca';
+
+  ctx.fillText(
+    'Data terbaru →',
+    Math.max(left, w - 100),
+    h - 7
+  );
+
+}
+
+
+/* =====================================
+   MENGAMBIL RIWAYAT REKAP DARI GOOGLE SHEETS
+===================================== */
+
+function requestRecap() {
+
+  const callbackName =
+    '__arusBocorRecap_' +
+    Date.now() + '_' +
+    Math.random().toString(36).slice(2);
+
+  const script = document.createElement('script');
+
+  let finished = false;
+
+
+  const timeout = setTimeout(() => {
+
+    finish();
+
+    document.getElementById('recapStatus').textContent =
+      'GAGAL MEMUAT';
+
+    document.getElementById('recapStatus').className =
+      'pill error';
+
+    document.getElementById('recapBody').innerHTML =
+      '<tr><td colspan="12" class="history-empty">Gagal mengambil riwayat rekap.</td></tr>';
+
+  }, 15000);
+
+
+  function finish() {
+
+    if (finished) return;
+
+    finished = true;
+
+    clearTimeout(timeout);
+
+    script.remove();
+
+    try {
+      delete window[callbackName];
+    } catch (_) {}
+
+  }
+
+
+  window[callbackName] = data => {
+
+    finish();
+
+    if (
+      !data ||
+      data.ok !== true ||
+      !Array.isArray(data.rows)
+    ) {
+
+      document.getElementById('recapStatus').textContent =
+        'RESPONS TIDAK VALID';
+
+      document.getElementById('recapStatus').className =
+        'pill error';
+
+      document.getElementById('recapBody').innerHTML =
+        '<tr><td colspan="12" class="history-empty">Format data rekap tidak sesuai.</td></tr>';
+
+      return;
+
+    }
+
+    renderRecap(data.rows);
+
+  };
+
+
+  script.onerror = () => {
+
+    finish();
+
+    document.getElementById('recapStatus').textContent =
+      'GAGAL MEMUAT';
+
+    document.getElementById('recapStatus').className =
+      'pill error';
+
+  };
+
+
+  script.src =
+    SCRIPT_URL +
+    '?action=recap&callback=' +
+    encodeURIComponent(callbackName) +
+    '&_=' + Date.now();
+
+  document.head.appendChild(script);
+
+}
+
+
+/* =====================================
+   MENAMPILKAN RIWAYAT REKAP
+===================================== */
+
+function renderRecap(rows) {
+
+  const select =
+    document.getElementById('recapDate');
+
+  const body =
+    document.getElementById('recapBody');
+
+  const status =
+    document.getElementById('recapStatus');
+
+
+  // Urutkan tanggal terbaru ke terlama.
+  rows.sort((a, b) =>
+    String(b[0]).localeCompare(String(a[0]))
+  );
+
+
+  if (!rows.length) {
+
+    select.innerHTML =
+      '<option value="">Belum ada rekap</option>';
+
+    body.innerHTML =
+      '<tr><td colspan="12" class="history-empty">Belum ada data rekap harian. Rekap akan muncul setelah trigger berjalan dan data tersedia.</td></tr>';
+
+    status.textContent = 'BELUM ADA DATA';
+    status.className = 'pill';
+
+    return;
+
+  }
+
+
+  select.innerHTML = rows.map((row, i) =>
+
+    `<option value="${i}">${escapeHtml(row[0])}</option>`
+
+  ).join('');
+
+
+  function showSelected() {
+
+    const row =
+      rows[Number(select.value)] || rows[0];
+
+
+    const cells = row.map((value, i) => {
+
+      if (
+        i >= 3 &&
+        value !== '' &&
+        value !== null &&
+        Number.isFinite(Number(value))
+      ) {
+
+        return Number(value).toLocaleString('id-ID', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+
+      }
+
+      return value === null || value === ''
+        ? '—'
+        : escapeHtml(String(value));
+
+    });
+
+
+    body.innerHTML =
+      '<tr>' +
+      cells.map(value => `<td>${value}</td>`).join('') +
+      '</tr>';
+
+  }
+
+
+  select.onchange = showSelected;
+
+  select.value = '0';
+
+  showSelected();
+
+
+  status.textContent =
+    rows.length + ' HARI TEREKAM';
+
+  status.className = 'pill online';
+
+}
+
+
+/* =====================================
+   PENGAMAN TEKS HTML
+===================================== */
+
+function escapeHtml(value) {
+
+  return String(value).replace(/[&<>"']/g, char => ({
+
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+
+  })[char]);
+
+}
+
+
+/* =====================================
+   JALANKAN DASHBOARD
+===================================== */
+
+window.addEventListener('resize', drawChart);
+
+// Ambil data realtime saat halaman dibuka.
+requestData();
+
+// Ambil riwayat rekap saat halaman dibuka.
+requestRecap();
+
+// Update realtime setiap 10 detik.
+setInterval(requestData, 10000);
+
+// Periksa rekap baru setiap 5 menit.
+setInterval(requestRecap, 300000);
+
+// Gambar riwayat grafik yang tersimpan.
+drawChart();
+
 </script>
 
 </body>
